@@ -1,0 +1,36 @@
+version: '3'
+services:
+  caddy:
+    image: 'sebastianandreas/gurka-caddy:latest'
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - web
+      - api
+    volumes:
+      - /data/caddy:/root/.caddy
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '5'
+        max-size: '50m'
+  web:
+    image: 'sebastianandreas/gurka-web:latest'
+    restart: always
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '5'
+        max-size: '50m'
+  api:
+    image: 'sebastianandreas/gurkapi:latest'
+    restart: always
+    volumes:
+      - /data:/data
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '5'
+        max-size: '50m'

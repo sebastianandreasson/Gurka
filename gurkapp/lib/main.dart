@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:compressimage/compressimage.dart';
 import 'package:flutter/material.dart';
@@ -23,20 +24,27 @@ class CameraApp extends StatefulWidget {
   _CameraAppState createState() => _CameraAppState();
 }
 
-class _CameraAppState extends State<CameraApp> {
+class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
   CameraController controller;
+  AnimationController rotationController;
 
   @override
   void initState() {
     super.initState();
+    rotationController = AnimationController(
+      duration: Duration(milliseconds: 5000),
+      vsync: this,
+      upperBound: pi * 2,
+    );
+    rotationController.repeat();
     if (cameras.length > 0) {
-      controller = CameraController(cameras[0], ResolutionPreset.medium);
+      controller = CameraController(cameras[0], ResolutionPreset.veryHigh);
       controller.initialize().then((_) async {
         if (!mounted) {
           return;
         }
         setState(() {});
-        await Future.delayed(Duration(seconds: 5));
+        await Future.delayed(Duration(minutes: 5));
         takeAndUploadPicture();
       });
     }
@@ -54,19 +62,21 @@ class _CameraAppState extends State<CameraApp> {
       '${DateTime.now()}.png',
     );
     await controller.takePicture(path);
-    await CompressImage.compress(imageSrc: path, desiredQuality: 75);
+    await CompressImage.compress(imageSrc: path, desiredQuality: 80);
 
     Uint8List bytes = File(path).readAsBytesSync();
 
-    var url = 'http://192.168.0.32:4000/gurkor';
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({'data': base64Encode(bytes)}),
-    );
-    await Future.delayed(Duration(seconds: 5));
+    var url = 'https://gurkapi.sebastianandreasson.com/gurkor';
+    try {
+      await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'data': base64Encode(bytes)}),
+      );
+    } catch (e) {}
+    await Future.delayed(Duration(minutes: 15));
     takeAndUploadPicture();
   }
 
@@ -79,7 +89,7 @@ class _CameraAppState extends State<CameraApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Gurka')),
+        appBar: AppBar(title: Text('Gurkor')),
         body: _body(context),
       ),
     );
@@ -98,9 +108,33 @@ class _CameraAppState extends State<CameraApp> {
         ),
       );
     }
-    return AspectRatio(
-      aspectRatio: controller.value.aspectRatio,
-      child: CameraPreview(controller),
+    return Row(
+      children: [
+        Container(
+          height: 400,
+          width: 400,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: controller.value.aspectRatio,
+              child: CameraPreview(controller),
+            ),
+          ),
+        ),
+        Container(
+          child: Center(
+            child: RotationTransition(
+              turns: Tween(begin: 0.0, end: 1.0).animate(rotationController),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text(
+                  '🥒!',
+                  style: TextStyle(fontSize: 50),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
