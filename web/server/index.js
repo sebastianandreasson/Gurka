@@ -11,6 +11,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const moment = require('moment')
+const { getAllFilesByExt } = require('./utils.js')
 
 const app = express()
 app.use(cors())
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 })
 app.get('/data/*', (req, res) => {
   const filePath = req.params[0]
+  console.log(filePath)
   let url = path.join(`${process.cwd()}/data/${filePath}`)
   res.sendFile(url)
 })
@@ -52,6 +54,11 @@ app.get('/gifs', async (req, res) => {
       files.filter((f) => f !== 'test.txt').map((f) => `/data/gifs/${f}`)
     )
   })
+})
+
+app.get('/gurkor', async (req, res) => {
+  const files = getAllFilesByExt(`${DATA_DIR}/gurkor`, 'jpg')
+  res.send(files)
 })
 
 app.post('/gurkor', async (req, res) => {
