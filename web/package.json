@@ -22,7 +22,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "sharp": "^0.25.2"
+    "sharp": "^0.25.2",
+    "styled-components": "^5.1.0"
   },
   "eslintConfig": {
     "extends": "react-app"
