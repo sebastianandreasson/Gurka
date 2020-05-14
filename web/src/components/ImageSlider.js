@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { Spring } from 'react-spring/renderprops'
+
 import styled from 'styled-components'
 import axios from 'axios'
 import moment from 'moment'
 
-const API_URL = 'https://gurkapi.sebastianandreasson.com'
+const API_URL = 'http://localhost:4000'
 
 const ImageSlider = styled.div`
   margin: 0 auto;
@@ -33,10 +35,25 @@ const ImageSlider = styled.div`
 const useSlider = (min, max, defaultState) => {
   const [state, setSlide] = useState(defaultState)
   const handleChange = (e) => {
-    console.log('setting level', e.target.value)
     setSlide(e.target.value)
   }
+  useEffect(() => {
+    const handleBeat = ({ detail }) => {
+      const _min = Math.floor(max * 0.75)
+      const val = Math.floor(Math.random() * (max - _min + 1)) + _min
+      console.log('handleBeat', detail.duration)
+      setSlide(val)
+      setTimeout(() => {
+        setSlide(0)
+      }, (detail.duration / 2) * 1000)
+    }
+    window.addEventListener('beat', handleBeat)
 
+    return () => {
+      window.removeEventListener('beat', handleBeat)
+    }
+  }, [max])
+  console.log('state', state)
   const props = {
     type: 'range',
     id: 'slider',
@@ -72,20 +89,28 @@ export default () => {
   }, [])
 
   return (
-    <ImageSlider>
-      {images.length && (
-        <>
-          <img
-            alt="gurkbild"
-            src={`${API_URL}/${images[sliderProps.value].replace(
-              '/data/',
-              '/'
-            )}`}
-          ></img>
-          <span>{dateForImage(images[sliderProps.value])}</span>
-        </>
-      )}
-      <input {...sliderProps} />
-    </ImageSlider>
+    <Spring
+      from={{ val: 0 }}
+      to={{ val: sliderProps.value }}
+      config={{ precision: 1 }}
+    >
+      {(props) => {
+        const value = Math.floor(props.val)
+        return (
+          <ImageSlider>
+            {images.length && (
+              <>
+                <img
+                  alt="gurkbild"
+                  src={`${API_URL}/${images[value].replace('/data/', '/')}`}
+                ></img>
+                <span>{dateForImage(images[value])}</span>
+              </>
+            )}
+            <input {...sliderProps} value={value} />
+          </ImageSlider>
+        )
+      }}
+    </Spring>
   )
 }

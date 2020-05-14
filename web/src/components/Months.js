@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
 
-const API_URL = 'https://gurkapi.sebastianandreasson.com'
+const API_URL = 'http://localhost:4000'
 
 const ImageList = styled.div`
   display: flex;
