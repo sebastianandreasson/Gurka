@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import moment from 'moment'
 
 const API_URL = 'https://gurkapi.sebastianandreasson.com'
@@ -23,6 +22,11 @@ const ImageSlider = styled.div`
   > input {
     margin-top: 15px;
     width: 100%;
+  }
+
+  > span {
+    margin-top: 5px;
+    font-size: 18px;
   }
 
   @media (max-width: 540px) {
@@ -53,38 +57,19 @@ const dateForImage = (img) => {
   // return img
   const index = img.indexOf('gurka-') + 6
   const dateString = img.slice(index, index + 25)
-  return moment(dateString).format('dddd, MMMM Do YYYY, HH:mm:ss')
+  return moment(dateString).format('dddd, MMMM Do YYYY, HH:mm')
 }
 
-export default () => {
-  const [images, setImages] = useState([])
-  const sliderProps = useSlider(0, images.length - 1, 0)
-
-  useEffect(() => {
-    async function getImages() {
-      const response = await axios.get(`${API_URL}/gurkor`)
-      const _images = await response.data
-
-      setImages(_images)
-    }
-
-    getImages()
-  }, [])
+export default ({ images }) => {
+  const sliderProps = useSlider(0, images.length - 1, images.length - 1)
 
   return (
     <ImageSlider>
-      {images.length && (
-        <>
-          <img
-            alt="gurkbild"
-            src={`${API_URL}/${images[sliderProps.value].replace(
-              '/data/',
-              '/'
-            )}`}
-          ></img>
-          <span>{dateForImage(images[sliderProps.value])}</span>
-        </>
-      )}
+      <img
+        alt="gurkbild"
+        src={`${API_URL}/${images[sliderProps.value].replace('/data/', '/')}`}
+      ></img>
+      <span>{dateForImage(images[sliderProps.value])}</span>
       <input {...sliderProps} />
     </ImageSlider>
   )

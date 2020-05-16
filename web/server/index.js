@@ -24,14 +24,15 @@ const height = 720
 const gif_width = Math.floor(width / 4)
 const gif_height = Math.floor(height / 4)
 
+app.use(
+  '/data',
+  express.static(path.join(__dirname, '../data'), {
+    maxAge: 86400000 * 5,
+  })
+)
+
 app.get('/', (req, res) => {
   res.send({ gur: 'ka' })
-})
-app.get('/data/*', (req, res) => {
-  const filePath = req.params[0]
-  console.log(filePath)
-  let url = path.join(`${process.cwd()}/data/${filePath}`)
-  res.sendFile(url)
 })
 
 app.get('/gif', async (req, res) => {
