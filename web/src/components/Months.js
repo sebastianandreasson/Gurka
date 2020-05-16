@@ -7,6 +7,7 @@ const API_URL = 'http://localhost:4000'
 const ImageList = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 `
 
 const Gif = styled.div`
@@ -53,8 +54,8 @@ export default () => {
 
   return (
     <ImageList>
-      {gifs.map((gif) => (
-        <Gif>
+      {gifs.map((gif, i) => (
+        <Gif key={`Gif_${i}`}>
           <span>{sliceName(gif)}</span>
           <img alt="gurkgif" src={`${API_URL}${gif}`}></img>
         </Gif>
