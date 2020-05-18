@@ -42,13 +42,13 @@ const useSlider = (min, max, defaultState) => {
   }
   useEffect(() => {
     const handleBeat = ({ detail }) => {
-      const _min = Math.floor(max * 0.75)
-      const val = Math.floor(Math.random() * (max - _min + 1)) + _min
+      // const _min = Math.floor(max * 0.75)
+      // const val = Math.floor(Math.random() * (max - _min + 1)) + _min
       console.log('handleBeat', detail.duration)
-      setSlide(val)
+      setSlide(max)
       setTimeout(() => {
         setSlide(0)
-      }, (detail.duration / 2) * 1000)
+      }, (detail.duration / 1.25) * 1000)
     }
     window.addEventListener('beat', handleBeat)
 
@@ -77,7 +77,7 @@ const dateForImage = (img) => {
 }
 
 export default ({ images }) => {
-  const sliderProps = useSlider(0, images.length - 1, images.length - 1)
+  const sliderProps = useSlider(0, images.length - 1, 0)
 
   return (
     <Spring

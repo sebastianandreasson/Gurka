@@ -33,7 +33,7 @@ export const login = () => {
         try {
           hash = event.data ? JSON.parse(event.data) : {}
         } catch (e) {}
-        if (hash && hash.type == 'access_token') {
+        if (hash && hash.type === 'access_token') {
           if (hash.access_token === '') {
             clearToken()
             return reject()
@@ -45,7 +45,7 @@ export const login = () => {
       false
     )
 
-    const w = window.open(
+    window.open(
       'http://localhost:4000/spotify/login',
       'Spotify',
       'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' +
